@@ -59,10 +59,10 @@ const About = () => {
             <li>Firebase/Firestore, React-firebase-hooks</li>
           </ul>
           <Me>
-            <p>
+            {/* <p>
               <h4 style={{ color: '#5f6368' }}> Designed and developed by </h4>
               <h1 style={{ color: 'var(--font-color-3)' }}>Pranav Shukla.</h1>
-            </p>
+            </p> */}
             <div></div>
             <p>
               {/* <a

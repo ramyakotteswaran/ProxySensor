@@ -1,49 +1,51 @@
-import { Button } from '@material-ui/core';
-import React from 'react';
-import styled from 'styled-components';
-import { auth, providerGoogle, providerGithub } from '../../firebase';
-import logo from '../../images/google_meet_logo.png';
+import { Button } from "@material-ui/core";
+import React from "react";
+import styled from "styled-components";
+import { auth, providerGoogle, providerGithub } from "../../firebase";
+import logo from "../../images/interview.jpeg";
+import alti from "../../images/altimetrik.png";
 
 const Login = () => {
   const signInGoogle = (e) => {
     e.preventDefault();
     auth.signInWithPopup(providerGoogle).catch((err) => console.log(err));
   };
-  // const signInGithub = (e) => {
-  //   e.preventDefault();
-  //   auth.signInWithPopup(providerGithub).catch((err) => console.log(err));
-  // };
+  const signInGithub = (e) => {
+    e.preventDefault();
+    auth.signInWithPopup(providerGithub).catch((err) => console.log(err));
+  };
   return (
     <LoginContainer>
       <LoginLogoContainer>
-        <img src={logo} alt='google_meet_logo' />
+        <img src={alti} alt="alti_logo" />
+        <img src={logo} alt="meet_logo" />
         <h1>Sign In</h1>
-        <p>Google Meet Clone</p>
-        <Button onClick={signInGoogle}> Sign In via Google</Button>
-        {/* <Button onClick={signInGithub}>Sign In via Github</Button> */}
+        {/* <p>Kabali</p> */}
+        <Button onClick={signInGoogle}> Sign In via Domain</Button>
+        <Button onClick={signInGithub}>Sign In ( Attendees )</Button>
         <Button
-          href='/about'
+          href="/about"
           style={{
-            width: 'fit-content',
-            padding: '5px 10px',
-            marginLeft: '5px',
-            position: 'absolute',
-            right: '30px',
-            top: '20px',
-            textTransform: 'none',
-            borderRadius: '5px',
+            width: "fit-content",
+            padding: "5px 10px",
+            marginLeft: "5px",
+            position: "absolute",
+            right: "30px",
+            top: "20px",
+            textTransform: "none",
+            borderRadius: "5px",
           }}
-          target='_blank'
+          target="_blank"
         >
-          <p style={{ color: '#63676c', fontSize: 'normal', padding: '0 5px' }}>
+          {/* <p style={{ color: '#63676c', fontSize: 'normal', padding: '0 5px' }}>
             About{' '}
-          </p>
-          <span
+          </p> */}
+          {/* <span
             className='material-icons-outlined'
             style={{ color: '#63676c', fontSize: '2rem' }}
           >
             info
-          </span>
+          </span> */}
         </Button>
       </LoginLogoContainer>
     </LoginContainer>

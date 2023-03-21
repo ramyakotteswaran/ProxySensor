@@ -28,7 +28,7 @@ const Body = () => {
         </h1>
         <h3>
           We re-engineered the services we built for secure business <br />
-          meetings, Google Meet, to make it free and available for all.
+          meetings, Kabali Meet, to make it free and available for all.
         </h3>
 
         <BodyButtons>
@@ -83,13 +83,13 @@ const Body = () => {
         <div className='line'></div>
 
         <LearnMore>
-          <a
+          {/* <a
             href='https://support.google.com/meet/?hl=en#topic=7306097'
             target='_blank'
             rel='noreferrer'
           >
-            <span>Learn More</span> about Google Meet
-          </a>
+            <span>Learn More</span> about Kabali Team
+          </a> */}
         </LearnMore>
       </BodyLeft>
       <BodyRight>

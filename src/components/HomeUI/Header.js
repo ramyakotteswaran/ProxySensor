@@ -27,7 +27,7 @@ const Header = () => {
 
   return (
     <HeaderContainer>
-      <HeaderIcon src={HeaderIconPhoto}></HeaderIcon>
+      <HeaderIcon></HeaderIcon>
       <HeaderContent>
         <HeaderContentLeft>
           <h3>{current}</h3>
