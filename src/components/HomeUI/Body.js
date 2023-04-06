@@ -12,11 +12,14 @@ const Body = () => {
 
   const dispatch = useDispatch();
   const video = useSelector((state) => state.video);
+  
   const { callInput, meetingType } = video;
 
   async function createRoom() {
+    
     const db = firebase.firestore();
     const roomRef = await db.collection('rooms').doc();
+    console.log('roomRef',roomRef);
     dispatch(setCallInput(roomRef?.id));
   }
 
@@ -37,7 +40,7 @@ const Body = () => {
               onClick={() => {
                 createRoom();
                 dispatch(setMeetingType('create'));
-              }}
+              }}x
             >
               <span
                 className='material-icons-outlined'
@@ -48,7 +51,7 @@ const Body = () => {
               New Meeting
             </Button>
             <CreateMeetLink
-              meetingType={meetingType}
+              meetingtype={meetingType}
               to={callInput === '' ? '/' : `/${callInput}`}
             >
               Create
@@ -72,7 +75,7 @@ const Body = () => {
               />
             </div>
             <JoinMeetLink
-              meetingType={meetingType}
+              meetingtype={meetingType}
               to={callInput === '' ? '/' : `/${callInput}`}
             >
               Join
@@ -180,7 +183,7 @@ const CreateMeetLink = styled(Link)`
   display: none;
   transition: all 200ms ease-in-out;
   ${(props) =>
-    props.meetingType === 'create' &&
+    props.meetingtype === 'create' &&
     css`
       display: block;
       color: #00796b;
@@ -242,7 +245,7 @@ const JoinMeetLink = styled(Link)`
   display: none;
   transition: all 200ms ease-in-out;
   ${(props) =>
-    props.meetingType === 'join' &&
+    props.meetingtype === 'join' &&
     css`
       display: block;
       color: #00796b;
