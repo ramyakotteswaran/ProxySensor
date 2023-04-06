@@ -10,19 +10,15 @@ const Login = () => {
     e.preventDefault();
     auth.signInWithPopup(providerGoogle).catch((err) => console.log(err));
   };
-  const signInGithub = (e) => {
-    e.preventDefault();
-    auth.signInWithPopup(providerGithub).catch((err) => console.log(err));
-  };
+
   return (
     <LoginContainer>
       <LoginLogoContainer>
         <img src={alti} alt="alti_logo" />
         <img src={logo} alt="meet_logo" />
         <h1>Sign In</h1>
-        {/* <p>Kabali</p> */}
         <Button onClick={signInGoogle}> Sign In via Domain</Button>
-        <Button onClick={signInGithub}>Sign In ( Attendees )</Button>
+        <Button onClick={signInGoogle}>Sign In ( Attendees )</Button>
         <Button
           href="/about"
           style={{
@@ -36,16 +32,7 @@ const Login = () => {
             borderRadius: "5px",
           }}
           target="_blank"
-        >
-          {/* <p style={{ color: '#63676c', fontSize: 'normal', padding: '0 5px' }}>
-            About{' '}
-          </p> */}
-          {/* <span
-            className='material-icons-outlined'
-            style={{ color: '#63676c', fontSize: '2rem' }}
-          >
-            info
-          </span> */}
+        >          
         </Button>
       </LoginLogoContainer>
     </LoginContainer>
