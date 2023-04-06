@@ -1,21 +1,21 @@
-import React, { Fragment, useEffect, useRef } from 'react';
-import styled, { css } from 'styled-components';
-import Header from '../CallPageUI/Header';
-import MeetingInfo from '../CallPageUI/MeetingInfo';
-import Chat from '../CallPageUI/Chat';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../../firebase';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { Fragment, useEffect, useRef } from "react";
+import styled, { css } from "styled-components";
+import Header from "../CallPageUI/Header";
+import MeetingInfo from "../CallPageUI/MeetingInfo";
+import Chat from "../CallPageUI/Chat";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../../firebase";
+import { useSelector, useDispatch } from "react-redux";
 
 // import MyClock from '../layout/Clock.js';
-import firebase from 'firebase';
+import firebase from "firebase";
 import {
   setMeetingType,
   setMeetingLeft,
   toggleWebcam,
   toggleMic,
-} from '../../redux/actions/videoActions';
-import { Button } from '@material-ui/core';
+} from "../../redux/actions/videoActions";
+import { Button } from "@material-ui/core";
 
 const CallPage = () => {
   // ------------------ webRTC Setup below--------------------------
@@ -23,6 +23,7 @@ const CallPage = () => {
   const [user] = useAuthState(auth);
 
   const video = useSelector((state) => state.video);
+  console.log("VIDEO", video);
   const dispatch = useDispatch();
 
   const { callInput, meetingType, meetingLeft, mic, videocam } = video;
@@ -34,8 +35,8 @@ const CallPage = () => {
     iceServers: [
       {
         urls: [
-          'stun:stun1.l.google.com:19302',
-          'stun:stun2.l.google.com:19302',
+          "stun:stun1.l.google.com:19302",
+          "stun:stun2.l.google.com:19302",
         ],
       },
     ],
@@ -49,17 +50,17 @@ const CallPage = () => {
 
   async function createRoom(roomId) {
     const db = firebase.firestore();
-    const roomRef = db.collection('rooms').doc(`${roomId}`);
+    const roomRef = db.collection("rooms").doc(`${roomId}`);
 
-    console.log('Create PeerConnection with configuration: ', configuration);
+    console.log("Create PeerConnection with configuration: ", configuration);
     peerConnection = new RTCPeerConnection(configuration);
 
     registerPeerConnectionListeners();
 
-    console.log('LOCAL STREAM IN CREATE ROOM');
+    console.log("LOCAL STREAM IN CREATE ROOM");
     console.log(localStream);
 
-    console.log('REMOTE STREAM IN CREATE ROOM');
+    console.log("REMOTE STREAM IN CREATE ROOM");
     console.log(remoteStream);
 
     localStream.getTracks().forEach((track) => {
@@ -67,14 +68,14 @@ const CallPage = () => {
     });
 
     // Code for collecting ICE candidates below
-    const callerCandidatesCollection = roomRef.collection('callerCandidates');
+    const callerCandidatesCollection = roomRef.collection("callerCandidates");
 
-    peerConnection.addEventListener('icecandidate', (event) => {
+    peerConnection.addEventListener("icecandidate", (event) => {
       if (!event.candidate) {
-        console.log('Got final candidate!');
+        console.log("Got final candidate!");
         return;
       }
-      console.log('Got candidate: ', event.candidate);
+      console.log("Got candidate: ", event.candidate);
       callerCandidatesCollection.add(event.candidate.toJSON());
     });
     // Code for collecting ICE candidates above
@@ -82,7 +83,7 @@ const CallPage = () => {
     // Code for creating a room below
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
-    console.log('Created offer:', offer);
+    console.log("Created offer:", offer);
 
     const roomWithOffer = {
       offer: {
@@ -94,10 +95,10 @@ const CallPage = () => {
     roomId = roomRef.id;
     console.log(`New room created with SDP offer. Room ID: ${roomRef.id}`);
 
-    peerConnection.addEventListener('track', (event) => {
-      console.log('Got remote track:', event.streams[0]);
+    peerConnection.addEventListener("track", (event) => {
+      console.log("Got remote track:", event.streams[0]);
       event.streams[0].getTracks().forEach((track) => {
-        console.log('Add a track to the remoteStream:', track);
+        console.log("Add a track to the remoteStream:", track);
         remoteStream.addTrack(track);
       });
     });
@@ -106,7 +107,7 @@ const CallPage = () => {
     roomRef.onSnapshot(async (snapshot) => {
       const data = snapshot.data();
       if (!peerConnection.currentRemoteDescription && data && data.answer) {
-        console.log('Got remote description: ', data.answer);
+        console.log("Got remote description: ", data.answer);
         const rtcSessionDescription = new RTCSessionDescription(data.answer);
         await peerConnection.setRemoteDescription(rtcSessionDescription);
       }
@@ -114,9 +115,9 @@ const CallPage = () => {
     // Listening for remote session description above
 
     // Listen for remote ICE candidates below
-    roomRef.collection('calleeCandidates').onSnapshot((snapshot) => {
+    roomRef.collection("calleeCandidates").onSnapshot((snapshot) => {
       snapshot.docChanges().forEach(async (change) => {
-        if (change.type === 'added') {
+        if (change.type === "added") {
           let data = change.doc.data();
           console.log(`Got new remote ICE candidate: ${JSON.stringify(data)}`);
           await peerConnection.addIceCandidate(new RTCIceCandidate(data));
@@ -128,12 +129,12 @@ const CallPage = () => {
 
   async function joinRoomById(roomId) {
     const db = firebase.firestore();
-    const roomRef = db.collection('rooms').doc(`${roomId}`);
+    const roomRef = db.collection("rooms").doc(`${roomId}`);
     const roomSnapshot = await roomRef.get();
-    console.log('Got room:', roomSnapshot.exists);
+    console.log("Got room:", roomSnapshot.exists);
 
     if (roomSnapshot.exists) {
-      console.log('Create PeerConnection with configuration: ', configuration);
+      console.log("Create PeerConnection with configuration: ", configuration);
       peerConnection = new RTCPeerConnection(configuration);
       registerPeerConnectionListeners();
       localStream.getTracks().forEach((track) => {
@@ -141,33 +142,33 @@ const CallPage = () => {
       });
 
       // Code for collecting ICE candidates below
-      const calleeCandidatesCollection = roomRef.collection('calleeCandidates');
-      peerConnection.addEventListener('icecandidate', (event) => {
+      const calleeCandidatesCollection = roomRef.collection("calleeCandidates");
+      peerConnection.addEventListener("icecandidate", (event) => {
         if (!event.candidate) {
-          console.log('Got final candidate!');
+          console.log("Got final candidate!");
           return;
         }
-        console.log('Got candidate: ', event.candidate);
+        console.log("Got candidate: ", event.candidate);
         calleeCandidatesCollection.add(event.candidate.toJSON());
       });
       // Code for collecting ICE candidates above
 
-      peerConnection.addEventListener('track', (event) => {
-        console.log('Got remote track:', event.streams[0]);
+      peerConnection.addEventListener("track", (event) => {
+        console.log("Got remote track:", event.streams[0]);
         event.streams[0].getTracks().forEach((track) => {
-          console.log('Add a track to the remoteStream:', track);
+          console.log("Add a track to the remoteStream:", track);
           remoteStream.addTrack(track);
         });
       });
 
       // Code for creating SDP answer below
       const offer = roomSnapshot.data().offer;
-      console.log('Got offer:', offer);
+      console.log("Got offer:", offer);
       await peerConnection.setRemoteDescription(
         new RTCSessionDescription(offer)
       );
       const answer = await peerConnection.createAnswer();
-      console.log('Created answer:', answer);
+      console.log("Created answer:", answer);
       await peerConnection.setLocalDescription(answer);
 
       const roomWithAnswer = {
@@ -180,9 +181,9 @@ const CallPage = () => {
       // Code for creating SDP answer above
 
       // Listening for remote ICE candidates below
-      roomRef.collection('callerCandidates').onSnapshot((snapshot) => {
+      roomRef.collection("callerCandidates").onSnapshot((snapshot) => {
         snapshot.docChanges().forEach(async (change) => {
-          if (change.type === 'added') {
+          if (change.type === "added") {
             let data = change.doc.data();
             console.log(
               `Got new remote ICE candidate: ${JSON.stringify(data)}`
@@ -200,9 +201,10 @@ const CallPage = () => {
       video: true,
       audio: true,
     });
-    console.log('stream');
+    console.log("stream------");
     console.log(stream);
     localVideoRef.current.srcObject = stream;
+    console.log("localVideoRef", localVideoRef);
     localStream = stream;
     remoteStream = new MediaStream();
     remoteVideoRef.current.srcObject = remoteStream;
@@ -229,15 +231,15 @@ const CallPage = () => {
     // Delete room on hangup
     if (roomId) {
       const db = firebase.firestore();
-      const roomRef = db.collection('rooms').doc(roomId);
+      const roomRef = db.collection("rooms").doc(roomId);
       const calleeCandidates = await roomRef
-        .collection('calleeCandidates')
+        .collection("calleeCandidates")
         .get();
       calleeCandidates.forEach(async (candidate) => {
         await candidate.ref.delete();
       });
       const callerCandidates = await roomRef
-        .collection('callerCandidates')
+        .collection("callerCandidates")
         .get();
       callerCandidates.forEach(async (candidate) => {
         await candidate.ref.delete();
@@ -246,25 +248,25 @@ const CallPage = () => {
     }
 
     dispatch(setMeetingLeft(true));
-    console.log('call cut');
+    console.log("call cut");
   }
 
   function registerPeerConnectionListeners() {
-    peerConnection.addEventListener('icegatheringstatechange', () => {
+    peerConnection.addEventListener("icegatheringstatechange", () => {
       console.log(
         `ICE gathering state changed: ${peerConnection.iceGatheringState}`
       );
     });
 
-    peerConnection.addEventListener('connectionstatechange', () => {
+    peerConnection.addEventListener("connectionstatechange", () => {
       console.log(`Connection state change: ${peerConnection.connectionState}`);
     });
 
-    peerConnection.addEventListener('signalingstatechange', () => {
+    peerConnection.addEventListener("signalingstatechange", () => {
       console.log(`Signaling state change: ${peerConnection.signalingState}`);
     });
 
-    peerConnection.addEventListener('iceconnectionstatechange ', () => {
+    peerConnection.addEventListener("iceconnectionstatechange ", () => {
       console.log(
         `ICE connection state change: ${peerConnection.iceConnectionState}`
       );
@@ -279,8 +281,12 @@ const CallPage = () => {
   };
 
   const toggleVideoStream = () => {
-    localStream.getVideoTracks()[0].enabled =
-      !localStream.getVideoTracks()[0].enabled;
+    // localStream.getVideoTracks()[0].enabled =
+    //   !localStream.getVideoTracks()[0].enabled;
+    if (localVideoRef.current.srcObject) {
+      localVideoRef.current.srcObject.getTracks()[1].enabled =
+        !localVideoRef.current.srcObject.getTracks()[1].enabled;
+    }
   };
   // ---------------------toggle audio and video streams above --------------------
 
@@ -291,24 +297,26 @@ const CallPage = () => {
       <FooterContainer>
         <UserInfo>
           <span
-            class='material-icons'
+            class="material-icons"
             style={{
-              backgroundColor: '#d93025',
-              color: 'white',
-              borderRadius: '50%',
-              fontSize: '1rem',
-              padding: '3px',
-              marginRight: '5px',
+              backgroundColor: "#d93025",
+              color: "white",
+              borderRadius: "50%",
+              fontSize: "1rem",
+              padding: "3px",
+              marginRight: "5px",
             }}
           >
-            {mic ? 'mic' : `mic_off`}
+            {mic ? "mic" : `mic_off`}
           </span>
-          <p style={{ color: 'white', fontSize: '1rem' }}>You</p>
+          <p style={{ color: "white", fontSize: "1rem" }}>You</p>
         </UserInfo>
         <FooterLeft>
           <div>
             <h3>Meeting Details</h3>
-            <span class='material-icons-outlined'>expand_less</span>
+            <span onClick={(e) => spanClick()} class="material-icons-outlined">
+              expand_less
+            </span>
           </div>
         </FooterLeft>
 
@@ -318,11 +326,10 @@ const CallPage = () => {
             <CallOptionContainer
               onClick={(e) => {
                 dispatch(toggleMic());
-                // console.log()
                 // toggleAudioStream();
               }}
             >
-              <span class='material-icons'>{mic ? 'mic' : `mic_off`}</span>
+              <span class="material-icons">{mic ? "mic" : `mic_off`}</span>
             </CallOptionContainer>
 
             {/* hangup button */}
@@ -330,10 +337,10 @@ const CallPage = () => {
               onClick={(e) => {
                 hangUp();
                 dispatch(setMeetingLeft(true));
-                dispatch(setMeetingType('meeting_left'));
+                dispatch(setMeetingType("meeting_left"));
               }}
             >
-              <span class='material-icons'>phone</span>
+              <span class="material-icons">phone</span>
             </CallOptionContainer>
 
             {/* videocam button */}
@@ -343,8 +350,8 @@ const CallPage = () => {
                 // toggleVideoStream();
               }}
             >
-              <span class='material-icons'>
-                {videocam ? 'videocam' : `videocam_off`}
+              <span class="material-icons">
+                {videocam ? "videocam" : `videocam_off`}
               </span>
             </CallOptionContainer>
           </div>
@@ -352,19 +359,19 @@ const CallPage = () => {
         <FooterRight>
           <ControlOptionContainer>
             <div>
-              <span class='material-icons-outlined'>closed_caption</span>
+              <span class="material-icons-outlined">closed_caption</span>
               <p>Turn on Caption</p>
             </div>
           </ControlOptionContainer>
           <ControlOptionContainer>
             <div>
-              <span class='material-icons-outlined'>present_to_all</span>
+              <span class="material-icons-outlined">present_to_all</span>
               <p>Present Now</p>
             </div>
           </ControlOptionContainer>
           <ControlOptionContainer>
             <div>
-              <span class='material-icons-outlined'>more_vert</span>
+              <span class="material-icons-outlined">more_vert</span>
             </div>
           </ControlOptionContainer>
         </FooterRight>
@@ -377,43 +384,55 @@ const CallPage = () => {
   useEffect(() => {
     async function getMedia() {
       await openUserMedia();
-      if (meetingType === 'create') {
+      if (meetingType === "create") {
         await createRoom(callInput);
       }
-      if (meetingType === 'join') {
+      if (meetingType === "join") {
         await joinRoomById(callInput);
       }
-      console.log('LOCAL STREAM IN USEEFFECT');
+      console.log("LOCAL STREAM IN USEEFFECT");
       console.log(localStream);
     }
-
     getMedia();
   }, []);
 
-  console.log('LOCAL STREAM OUTSIDE USEEFFECT');
+  useEffect(() => {
+    async function getMedia() {
+      console.log("qwerty 2 ", videocam);
+      //await openUserMedia();
+      toggleVideoStream();
+    }
+    getMedia();
+  }, [videocam]);
+
+  function spanClick() {
+    return <MeetingInfo />;
+  }
+
+  console.log("LOCAL STREAM OUTSIDE USEEFFECT");
   console.log(localStream);
 
   if (meetingLeft === true) {
     return (
       <Fragment>
         <Button
-          href='/'
+          href="/"
           style={{
-            width: 'fit-content',
-            padding: '5px 0',
-            marginLeft: '5px',
-            position: 'fixed',
-            right: '140px',
-            top: '20px',
-            textTransform: 'none',
+            width: "fit-content",
+            padding: "5px 0",
+            marginLeft: "5px",
+            position: "fixed",
+            right: "140px",
+            top: "20px",
+            textTransform: "none",
           }}
         >
-          <p style={{ color: '#63676c', fontSize: 'normal', padding: '0 5px' }}>
-            Home{' '}
+          <p style={{ color: "#63676c", fontSize: "normal", padding: "0 5px" }}>
+            Home{" "}
           </p>
           <span
-            className='material-icons-outlined'
-            style={{ color: '#63676c', fontSize: '2rem' }}
+            className="material-icons-outlined"
+            style={{ color: "#63676c", fontSize: "2rem" }}
           >
             home
           </span>
@@ -421,25 +440,25 @@ const CallPage = () => {
         <Button
           onClick={(e) => {
             e.preventDefault();
-            console.log('signing out');
+            console.log("signing out");
             auth.signOut();
           }}
           style={{
-            width: 'fit-content',
-            padding: '5px 0',
-            marginLeft: '5px',
-            position: 'fixed',
-            right: '20px',
-            top: '20px',
-            textTransform: 'none',
+            width: "fit-content",
+            padding: "5px 0",
+            marginLeft: "5px",
+            position: "fixed",
+            right: "20px",
+            top: "20px",
+            textTransform: "none",
           }}
         >
-          <p style={{ color: '#63676c', fontSize: 'normal', padding: '0 5px' }}>
-            Logout{' '}
+          <p style={{ color: "#63676c", fontSize: "normal", padding: "0 5px" }}>
+            Logout{" "}
           </p>
           <span
-            className='material-icons-outlined'
-            style={{ color: '#63676c', fontSize: '2rem' }}
+            className="material-icons-outlined"
+            style={{ color: "#63676c", fontSize: "2rem" }}
           >
             logout
           </span>
@@ -447,13 +466,13 @@ const CallPage = () => {
         <MeetingLeftContainer>
           <div>
             <h1>You left the meeting.</h1>
-            <ReturnHomeTag href='/'>
+            <ReturnHomeTag href="/">
               <span> Return to home screen</span>
             </ReturnHomeTag>
             <Button>Submit Feedback</Button>
             <div>
               <div>
-                <span class='material-icons'>local_police</span>
+                <span class="material-icons">local_police</span>
                 <div>
                   <h2>Your meeting is safe.</h2>
                   <p>
@@ -633,7 +652,7 @@ const FooterRight = styled.div`
 
 const ControlOptionContainer = styled.div`
   color: #3c4043;
-  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  font-family: "Google Sans", Roboto, Arial, sans-serif;
   font-size: 13px;
   font-weight: 500;
   line-height: 15px;
