@@ -5,7 +5,7 @@ const MessageItem = ({ message, timeStamp, user }) => {
   return (
     <Sender>
       <p>
-        {user} <small>{`${timeStamp?.toDate().toUTCString()}`}</small>
+        {user} <small>{`${timeStamp?.toDate().toLocaleString([],{ hour12: true})}`}</small>
       </p>
       <Message>{message}</Message>
     </Sender>
